@@ -1,3 +1,4 @@
+/** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -7,12 +8,20 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'primary': '#4CAF50', // Verde
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        border: 'hsl(var(--border))',
+        primary: '#4CAF50', // Verde
         'primary-dark': '#388E3C',
         'primary-light': '#C8E6C9',
       },
+      textWrap: {
+        balance: 'balance',
+      },
     },
   },
-  plugins: [],
-}
-
+  plugins: [
+    require('@tailwindcss/forms'), // Plugins úteis, remova se não precisar
+    require('@tailwindcss/typography'),
+  ],
+};
