@@ -1,20 +1,24 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
+import { useState } from 'react';
 
 type AddEventModalProps = {
-  onClose: () => void
-  onAdd: (title: string) => void
-  date: Date | null
-}
+  onClose: () => void;
+  onAdd: (title: string) => void;
+  date: Date | null;
+};
 
-export default function AddEventModal({ onClose, onAdd, date }: AddEventModalProps) {
-  const [title, setTitle] = useState('')
+export default function AddEventModal({
+  onClose,
+  onAdd,
+  date,
+}: AddEventModalProps) {
+  const [title, setTitle] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onAdd(title)
-  }
+    e.preventDefault();
+    onAdd(title);
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -22,7 +26,10 @@ export default function AddEventModal({ onClose, onAdd, date }: AddEventModalPro
         <h2 className="text-lg font-bold mb-4">Adicionar Plantão</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="title"
+              className="block text-sm font-medium text-gray-700"
+            >
               Título
             </label>
             <input
@@ -58,6 +65,5 @@ export default function AddEventModal({ onClose, onAdd, date }: AddEventModalPro
         </form>
       </div>
     </div>
-  )
+  );
 }
-

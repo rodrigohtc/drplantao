@@ -1,23 +1,29 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import moment from 'moment'
+import { useState, useEffect } from 'react';
+import moment from 'moment';
 
 type Evento = {
-  id: number
-  title: string
-  start: Date
-  end: Date
-}
+  id: number;
+  title: string;
+  start: Date;
+  end: Date;
+};
 
-export default function EventList({ initialEvents }: { initialEvents: Evento[] }) {
-  const [events, setEvents] = useState<Evento[]>(initialEvents)
+export default function EventList({
+  initialEvents,
+}: {
+  initialEvents: Evento[];
+}) {
+  const [events, setEvents] = useState<Evento[]>(initialEvents);
 
   useEffect(() => {
-    setEvents(initialEvents)
-  }, [initialEvents])
+    setEvents(initialEvents);
+  }, [initialEvents]);
 
-  const sortedEvents = [...events].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime())
+  const sortedEvents = [...events].sort(
+    (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
+  );
 
   return (
     <ul className="bg-white shadow-md rounded-lg divide-y divide-gray-200">
@@ -32,6 +38,5 @@ export default function EventList({ initialEvents }: { initialEvents: Evento[] }
         </li>
       ))}
     </ul>
-  )
+  );
 }
-
