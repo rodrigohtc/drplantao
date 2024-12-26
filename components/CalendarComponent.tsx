@@ -10,7 +10,7 @@ import AddEventModal from './AddEventModal';
 moment.locale('pt-br');
 const localizer = momentLocalizer(moment);
 
-type Evento = {
+export type Evento = {
   id: number;
   title: string;
   start: Date;
@@ -18,13 +18,24 @@ type Evento = {
 };
 
 export default function CalendarComponent({
-  initialEvents,
+  events,
+  onEventAdd,
 }: {
-  initialEvents: Evento[];
+  events: Evento[];
+  onEventAdd?: (event: Evento) => void;
 }) {
-  const [events, setEvents] = useState<Evento[]>(initialEvents);
   const [showModal, setShowModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [currentView, setCurrentView] = useState('month');
+  const [currentDate, setCurrentDate] = useState(new Date()); // Gerencia a data atual
+
+  const handleViewChange = (view: string) => {
+    setCurrentView(view);
+  };
+
+  const handleNavigate = (date: Date) => {
+    setCurrentDate(date);
+  };
 
   const handleSelectSlot = ({ start }: { start: Date }) => {
     setSelectedDate(start);
@@ -39,8 +50,11 @@ export default function CalendarComponent({
         start: selectedDate,
         end: moment(selectedDate).add(1, 'hours').toDate(),
       };
-      setEvents([...events, newEvent]);
       setShowModal(false);
+
+      if (onEventAdd) {
+        onEventAdd(newEvent);
+      }
     }
   };
 
@@ -51,6 +65,10 @@ export default function CalendarComponent({
         events={events}
         startAccessor="start"
         endAccessor="end"
+        date={currentDate}
+        onNavigate={handleNavigate}
+        view={currentView}
+        onView={handleViewChange}
         style={{ height: '500px' }}
         onSelectSlot={handleSelectSlot}
         selectable

@@ -1,23 +1,35 @@
-'use client';
-
-import { useState } from 'react';
-
-type AddEventModalProps = {
-  onClose: () => void;
-  onAdd: (title: string) => void;
-  date: Date | null;
-};
+import React, { useState } from 'react';
 
 export default function AddEventModal({
   onClose,
   onAdd,
   date,
-}: AddEventModalProps) {
+}: {
+  onClose: () => void;
+  onAdd: (title: string, startTime: string, endTime: string) => void;
+  date: Date | null;
+}) {
   const [title, setTitle] = useState('');
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onAdd(title);
+
+    if (!startTime || !endTime) {
+      alert('Por favor, insira horários válidos.');
+      return;
+    }
+
+    const startDate = new Date(`${date?.toDateString()} ${startTime}`);
+    const endDate = new Date(`${date?.toDateString()} ${endTime}`);
+
+    if (endDate <= startDate) {
+      alert('A hora de fim deve ser posterior à hora de início.');
+      return;
+    }
+
+    onAdd(title, startTime, endTime);
   };
 
   return (
@@ -42,16 +54,48 @@ export default function AddEventModal({
             />
           </div>
           <div>
+            <label
+              htmlFor="start-time"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Hora de Início
+            </label>
+            <input
+              type="time"
+              id="start-time"
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
+              required
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="end-time"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Hora de Fim
+            </label>
+            <input
+              type="time"
+              id="end-time"
+              value={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
+              required
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+            />
+          </div>
+          <div className="flex justify-end space-x-4">
             <label className="block text-sm font-medium text-gray-700">
               Data
             </label>
-            <p>{date?.toLocaleString('pt-BR')}</p>
+            <p>{date?.toLocaleDateString('pt-BR')}</p>
           </div>
-          <div className="flex justify-end space-x-2">
+          <div className="flex justify-end">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary mr-4"
             >
               Cancelar
             </button>

@@ -1,67 +1,104 @@
 'use client';
 
-import { useState } from 'react';
+import { I18n } from 'aws-amplify/utils';
+import React from 'react';
+import {
+  Authenticator,
+  ThemeProvider,
+  View,
+  useTheme,
+  useAuthenticator,
+  translations,
+  Image,
+} from '@aws-amplify/ui-react';
+import '@aws-amplify/ui-react/styles.css';
+import { Amplify } from 'aws-amplify';
+import awsconfig from '@/src/amplifyconfiguration.json';
 import { useRouter } from 'next/navigation';
+import authTheme from '@/components/CustomTheme';
+import { tokens } from '@/components/Tokens';
+import { CustomHeader } from '@/components/authenticator/CustomHeader';
+import { CustomFooter } from '@/components/authenticator/CustomFooter';
+import { CustomFormFields } from '@/components/authenticator/CustomFormFields';
 
-export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+I18n.putVocabularies(translations);
+I18n.setLanguage('pt');
+
+Amplify.configure(awsconfig);
+
+export default function Login() {
   const router = useRouter();
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Aqui você implementaria a lógica de autenticação
-    console.log('Login com:', email, password);
-    router.push('/'); // Redireciona para a página inicial após o login
+  const customFormFields = CustomFormFields();
+  const navigateToCalendar = () => {
+    router.push('/calendario');
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-primary-light">
-      <div className="bg-white p-8 rounded-lg shadow-md w-96">
-        <h1 className="text-2xl font-bold mb-6 text-center text-primary">
-          Dr Plantão
-        </h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
-              E-mail
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Senha
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-          >
-            Entrar
-          </button>
-        </form>
-      </div>
+    <div
+      className="min-h-screen flex items-center justify-center"
+      style={{ backgroundColor: tokens.colors.brand.primary200 }}
+    >
+      <ThemeProvider theme={authTheme}>
+        <Authenticator formFields={customFormFields} components={components}>
+          {({ signOut }) => {
+            console.log(signOut);
+            navigateToCalendar();
+            return <div></div>;
+          }}
+        </Authenticator>
+      </ThemeProvider>
     </div>
   );
 }
+
+const components = {
+  Header() {
+    const { tokens } = useTheme();
+    return (
+      <View textAlign="center" padding={tokens.space.large}>
+        <Image
+          src={'/assets/images/logo.png'}
+          style={{ width: 300, height: 300 }}
+          alt="DrPlantao logo"
+        />
+      </View>
+    );
+  },
+  Footer() {
+    return CustomFooter('© Todos os direitos reservados');
+  },
+  SignIn: {
+    Header: () => CustomHeader('Entre na sua conta', 6),
+    Footer: () => {
+      const { toForgotPassword } = useAuthenticator();
+      return CustomFooter(undefined, toForgotPassword, 'Esqueci minha senha');
+    },
+  },
+  SignUp: {
+    Header: () => CustomHeader('Criar uma nova conta'),
+    Footer: () => {
+      const { toSignIn } = useAuthenticator();
+      return CustomFooter(undefined, toSignIn, 'Voltar para o login');
+    },
+  },
+  ConfirmSignUp: {
+    Header: () => CustomHeader('Digite a informação:'),
+    Footer: () => CustomFooter('Footer Information'),
+  },
+  SetupTotp: {
+    Header: () => CustomHeader('Digite a informação:'),
+    Footer: () => CustomFooter('Footer Information'),
+  },
+  ConfirmSignIn: {
+    Header: () => CustomHeader('Digite a informação:'),
+    Footer: () => CustomFooter('Footer Information'),
+  },
+  ForgotPassword: {
+    Header: () => CustomHeader('Digite a informação:'),
+    Footer: () => CustomFooter('Footer Information'),
+  },
+  ConfirmResetPassword: {
+    Header: () => CustomHeader('Digite a informação:'),
+    Footer: () => CustomFooter('Footer Information'),
+  },
+};
